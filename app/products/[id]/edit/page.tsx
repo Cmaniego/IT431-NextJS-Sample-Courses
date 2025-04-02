@@ -5,64 +5,54 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
-import { Course } from "@/types/course";
+import { product } from "@/types/product";
 
-interface EditCoursePageProps {
+interface EditproductPageProps {
   params: {
     id: string;
   };
 }
 
-export default function EditCoursePage({ params }: EditCoursePageProps) {
+export default function EditproductPage({ params }: EditproductPageProps) {
   const router = useRouter();
   // Note: On client components, we don't need to await params since they're already resolved
-  const courseId = parseInt(params.id, 10);
+  
+  const productId = parseInt(params.id, 10);
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<Course>>({
+  const [formData, setFormData] = useState<Partial<product>>({
     title: "",
-    description: "",
-    estimatedTime: ""
+    author: "",
+    synopsis: "",
+    volumeNumber: ""
   });
 
-  // Fetch the course data
+  // Fetch the product data
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchproduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/courses/${courseId}`);
+        const response = await fetch(`/api/products/${productId}`);
         
         if (!response.ok) {
-          throw new Error("Failed to fetch course");
+          throw new Error("Failed to fetch any manga :(. ");
         }
         
-        const course: Course = await response.json();
         
-        // Extract hours from estimatedTime (e.g., "10 hours" -> "10")
-        let hours = course.estimatedTime;
-        if (hours && hours.includes(" hours")) {
-          hours = hours.replace(" hours", "");
-        }
-        
-        setFormData({
-          ...course,
-          estimatedTime: hours
-        });
-        setError(null);
       } catch (err) {
-        console.error("Error fetching course:", err);
-        setError("Failed to load course. Please try again.");
+        console.error("Error fetching Manga:", err);
+        setError("Failed to load Manga. Please try again.");
       } finally {
         setLoading(false);
       }
     };
     
-    if (courseId) {
-      fetchCourse();
+    if (productId) {
+      fetchproduct();
     }
-  }, [courseId]);
+  }, [productId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -74,14 +64,14 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
     setSaving(true);
 
     try {
-      // Format the estimatedTime to include "hours"
+      // Format the Volume to include "volumes"
       const dataToSubmit = {
         ...formData,
-        id: courseId,
-        estimatedTime: formData.estimatedTime ? `${formData.estimatedTime} hours` : ""
+        id: productId,
+        volumeNumber: formData.volumeNumber ? `Volume ${formData.volumeNumber}` : ""
       };
 
-      const response = await fetch(`/api/courses/${courseId}`, {
+      const response = await fetch(`/api/products/${productId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -90,15 +80,15 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update course");
+        throw new Error("Failed to update product");
       }
 
-      // Redirect to course details page after successful update
-      router.push(`/courses/${courseId}`);
+      // Redirect to product details page after successful update
+      router.push(`/products/${productId}`);
       router.refresh(); // Refresh the page data
     } catch (error) {
-      console.error("Error updating course:", error);
-      setError("Failed to update course. Please try again.");
+      console.error("Error updating product:", error);
+      setError("Failed to update the Manga. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -110,7 +100,7 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
         <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto text-center">
-            <p>Loading course information...</p>
+            <p>Loading product information...</p>
           </div>
         </main>
       </div>
@@ -123,8 +113,8 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Edit Course</h1>
-            <Link href={`/courses/${courseId}`}>
+            <h1 className="text-2xl font-bold">Edit product</h1>
+            <Link href={`/products/${productId}`}>
               <Button variant="outline">Cancel</Button>
             </Link>
           </div>
@@ -135,10 +125,10 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
+          <form onSubmit={handleSubmit} className="space-y-6 bg-black p-6 rounded-lg shadow">
             <div className="space-y-2">
               <label htmlFor="title" className="block font-medium">
-                Course Title <span className="text-red-500">*</span>
+                Manga Title <span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -148,45 +138,61 @@ export default function EditCoursePage({ params }: EditCoursePageProps) {
                 value={formData.title || ""}
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course title"
+                placeholder="Enter Title"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description" className="block font-medium">
-                Description <span className="text-red-500">*</span>
+              <label htmlFor="author" className="block font-medium">
+                Author <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="author"
+                name="author"
+                type="text"
+                required
+                value={formData.author || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter Title"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="synopsis" className="block font-medium">
+                Synopsis <span className="text-red-500 ">*</span>
               </label>
               <textarea
-                id="description"
-                name="description"
+                id="synopsis"
+                name="synopsis"
                 required
-                value={formData.description || ""}
+                value={formData.synopsis || ""}
                 onChange={handleChange}
                 rows={4}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course description"
+                placeholder="Enter Synopsis"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="estimatedTime" className="block font-medium">
-                Estimated Time (hours)
+              <label htmlFor="volumeNumber" className="block font-medium">
+                Volume Number
               </label>
               <input
-                id="estimatedTime"
-                name="estimatedTime"
+                id="volumeNumber"
+                name="volumeNumber"
                 type="number"
-                value={formData.estimatedTime || ""}
+                value={formData.volumeNumber}
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter number of hours"
+                placeholder="Enter the Volume Number"
               />
             </div>
 
             <div className="pt-4">
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800"
                 disabled={saving}
               >
                 {saving ? "Saving Changes..." : "Save Changes"}

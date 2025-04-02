@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Courses App",
-  description: "Written by Randy Michak",
+  title: "Manga App",
+  description: "Written by Carlos Maniego",
 };
 
 export default function RootLayout({

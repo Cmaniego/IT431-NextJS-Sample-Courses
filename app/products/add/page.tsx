@@ -6,13 +6,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 
-export default function AddCoursePage() {
+export default function AddproductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    estimatedTime: ""
+    author: "",
+    synopsis: "",
+    volumeNumber: ""
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -25,14 +26,14 @@ export default function AddCoursePage() {
     setLoading(true);
 
     try {
-      // Format the estimatedTime to include "hours"
+      // Format the volumeNumber to include "Number"
       const dataToSubmit = {
         ...formData,
-        estimatedTime: formData.estimatedTime ? `${formData.estimatedTime} hours` : undefined
+        volumeNumber: formData.volumeNumber ? `Volume ${formData.volumeNumber}` : undefined
       };
 
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-      const response = await fetch(`${baseUrl}/api/courses`, {
+      const response = await fetch(`${baseUrl}/api/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,15 +42,15 @@ export default function AddCoursePage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add course");
+        throw new Error("Failed to add product");
       }
 
       // Redirect to home page after successful creation
       router.push("/");
       router.refresh(); // Refresh the page data
     } catch (error) {
-      console.error("Error adding course:", error);
-      alert("Failed to add course. Please try again.");
+      console.error("Error adding product:", error);
+      alert("Failed to add product. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -61,16 +62,16 @@ export default function AddCoursePage() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Add New Course</h1>
+            <h1 className="text-2xl font-bold">Add New Manga</h1>
             <Link href="/">
-              <Button variant="outline">Back to Courses</Button>
+              <Button variant="outline">Back to other All Manga</Button>
             </Link>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
+          <form onSubmit={handleSubmit} className="space-y-6 bg-black p-6 rounded-lg shadow">
             <div className="space-y-2">
               <label htmlFor="title" className="block font-medium">
-                Course Title <span className="text-red-500">*</span>
+                Title <span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -80,48 +81,64 @@ export default function AddCoursePage() {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course title"
+                placeholder="Enter product title"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description" className="block font-medium">
-                Description <span className="text-red-500">*</span>
+              <label htmlFor="author" className="block font-medium">
+                Author
+              </label>
+              <input
+                id="author"
+                name="author"
+                type="text"
+                value={formData.author}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter the name of the author"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="synopsis" className="block font-medium">
+                Synopsis <span className="text-red-500">*</span>
               </label>
               <textarea
-                id="description"
-                name="description"
+                id="synopsis"
+                name="synopsis"
                 required
-                value={formData.description}
+                value={formData.synopsis}
                 onChange={handleChange}
                 rows={4}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter course description"
+                placeholder="Enter product synopsis"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="estimatedTime" className="block font-medium">
-                Estimated Time (hours)
+              <label htmlFor="volumeNumber" className="block font-medium">
+                Volume Number
               </label>
               <input
-                id="estimatedTime"
-                name="estimatedTime"
+                id="volumeNumber"
+                name="volumeNumber"
                 type="number"
-                value={formData.estimatedTime}
+                value={formData.volumeNumber}
                 onChange={handleChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter number of hours"
+                placeholder="Enter the Volume Number"
               />
             </div>
+
 
             <div className="pt-4">
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-700 hover:from-yellow-600 hover:to-yellow-800"
                 disabled={loading}
               >
-                {loading ? "Adding Course..." : "Add Course"}
+                {loading ? "Adding product..." : "Add product"}
               </Button>
             </div>
           </form>
